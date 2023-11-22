@@ -30,12 +30,18 @@ class DBStorage():
             pass
 
     def all(self, cls=None):
+        classes = {'State': State, 'City': City, 'Amenity': Amenity, 'Place': Place, 'Review': Review, 'User': User}
+        if cls in classes.keys():
+            cls = classes[cls]
+
         if cls is None:
             # If cls is not specified, query all objects from all tables
-            objects = self.__session.query(State, City, Amenity, Place, Review, User).all()
+            objects = []
+            objects += self.__session.query(State).all()
+            objects += self.__session.query(City).all()
         else:
             # Query all objects of the specified class
-            objects = self.__session.query(State).all()
+            objects = self.__session.query(cls).all()
 
         return {f'{obj.__class__.__name__}.{obj.id}': obj for obj in objects}
 

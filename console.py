@@ -226,11 +226,12 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
         print_list = []
+        
+        if args == '':
+            args = None
 
         if env == 'db':
             store = storage.all(args)
-            # print(args)
-            # sys.exit()
         else:
             store = storage._FileStorage__objects
 
