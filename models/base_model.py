@@ -8,6 +8,7 @@ from sqlalchemy import Column, String, DateTime
 
 Base = declarative_base()
 
+
 class BaseModel:
     """A base class for all hbnb models"""
     id = Column(String(60), nullable=False, primary_key=True)
@@ -35,7 +36,7 @@ class BaseModel:
         alt_dict.update(self.__dict__)
         if '_sa_instance_state' in alt_dict.keys():
             alt_dict.pop('_sa_instance_state')
-        
+
         return '[{}] ({}) {}'.format(cls, self.id, alt_dict)
 
     def save(self):
@@ -57,10 +58,9 @@ class BaseModel:
         if '_sa_instance_state' in dictionary.keys():
             dictionary.pop('_sa_instance_state')
         return dictionary
-    
+
     def delete(self):
         """deletes the current instance from the storage"""
         from models import storage
 
         storage.delete(self)
-
