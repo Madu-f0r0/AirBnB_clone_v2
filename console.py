@@ -134,8 +134,8 @@ class HBNBCommand(cmd.Cmd):
         for param in commands[1:]:
             if '=' in param:
                 key, value = param.split('=')
-                if '"' in value:
-                    dictionary[key] = value[1:-1]
+                if value.startswith('"'):
+                    dictionary[key] = value[1:-1].replace('_', ' ')
                 elif '.' in value:
                     try:
                         dictionary[key] = float(value)
