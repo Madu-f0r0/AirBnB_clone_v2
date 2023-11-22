@@ -11,7 +11,11 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        return self.__objects
+        if cls:
+            return {key: val for key, val in FileStorage.__objects.items()
+                    if key.startswith(cls.__name__)}
+        else:
+            return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -38,7 +42,7 @@ class FileStorage:
         from models.amenity import Amenity
         from models.review import Review
 
-        classes = {
+        cls = {
                     'BaseModel': BaseModel, 'User': User, 'Place': Place,
                     'State': State, 'City': City, 'Amenity': Amenity,
                     'Review': Review
@@ -49,15 +53,16 @@ class FileStorage:
                 json_str = f.read()
                 temp = json.loads(json_str)
                 for key, val in temp.items():
-                        FileStorage.__objects[key] = classes[val['__class__']](**val)
+                    FileStorage.__objects[key] = cls[val['__class__']](**val)
         except FileNotFoundError:
             pass
         except JSONDecodeError as e:
-            print(f"Error decoding JSON in file {FileStorage.__file_path}: {e}")
+            print(f"Err decoding JSON in file {FileStorage.__file_path}: {e}")
             print("Problematic JSON string:")
             print(json_str)
-    
+
     def delete(self, obj=None):
+        """Deletes the specified object"""
         if obj:
             key = obj.to_dict()['__class__'] + '.' + obj.id
             if key in FileStorage.__objects:
