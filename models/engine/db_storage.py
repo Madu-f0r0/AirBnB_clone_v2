@@ -2,12 +2,14 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import (create_engine)
 from sqlalchemy.ext.declarative import declarative_base
 from os import getenv
+from models.base_model import BaseModel, Base
 from models.city import City
 from models.state import State
 from models.user import User
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+import sys
 
 
 class DBStorage():
@@ -28,19 +30,15 @@ class DBStorage():
             pass
 
     def all(self, cls=None):
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(session_factory)
-        self.__session = Session()
-
         if cls is None:
-            result = self.__session.query(User, State, City, Amenity, Place, Review).all()
-            dictionary = {}
-            for obj in result:
-                dictionary.update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
-            return dictionary
+            # If cls is not specified, query all objects from all tables
+            objects = self.__session.query(State, City, Amenity, Place, Review, User).all()
         else:
-            obj = self.__session.query(cls).all()
-            return {obj.to_dict()['__class__'] + '.' + obj.id: obj}
+            # Query all objects of the specified class
+            objects = self.__session.query(State).all()
+
+        return {f'{obj.__class__.__name__}.{obj.id}': obj for obj in objects}
+
 
     def new(self, obj):
         self.__session.add(obj)
@@ -53,5 +51,9 @@ class DBStorage():
             self.__session.delete(obj)
 
     def reload(self):
-        Base = declarative_base()
         Base.metadata.create_all(self.__engine)
+
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(session_factory)
+        self.__session = Session()
+        
