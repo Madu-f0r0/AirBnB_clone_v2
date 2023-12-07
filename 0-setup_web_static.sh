@@ -1,48 +1,35 @@
 #!/usr/bin/env bash
-# Bash script setting up the server for deployment of web_static
+# Initial config of my web servers
 
-# updating system and installing nginx
-apt-get update
-apt-get -y install nginx
+#Install Nginx if not installed already
+if [ ! -x "$(command -v nginx)" ];
+        apt-get -y update
+        apt-get -y install nginx
+fi
 
-mkdir -p /data/
-mkdir -p /data/web_static/
-mkdir -p /data/web_static/releases/
-mkdir -p /data/web_static/shared/
-mkdir -p /data/web_static/releases/test/
+# Make the following directories if they do not exist
+mkdir -p "/data/web_static/releases/test"
+mkdir -p "/data/web_static/shared"
 
-echo "Bring me a Cup" > /data/web_static/releases/test/index.html
+# Create fake html file to test Nginx config
+echo "my config works well" > "/data/web_static/releases/test/index.html"
 
-# Creating a symbolic link
-ln -sf /data/web_static/releases/test/ /data/web_static/current
+# Create symlink of /data/web_static/current to /data/web_static/releases/test/
+# Delete and recreate link if already exists
+if [ -L "/data/web_static/current" ];
+then
+        rm "/data/web_static/current"
+fi
 
-# giving ownership
-chown -R ubuntu /data/
-chgrp -R ubuntu /data/
+ln -s "/data/web_static/releases/test/" "/data/web_static/current"
 
-# Update the Nginx configuration
-printf %s "server {
-    listen 80;
-    listen [::]:80 default_server;
-    add_header X-Served-By $HOSTNAME;
-    root   /var/www/html;
-    index  index.html index.htm index.nginx-debian.html;
+# Change /data/ ownership to ubuntu
+chown -R "ubuntu":"ubuntu" "/data/"
 
-    location /hbnb_static {
-        alias /data/web_static/current;
-        index index.html index.htm;
-    }
+# Add location block to Nginx default server block for hbnb_static
+add_block="server_name _;\n\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}"
 
-    location /redirect_me {
-        return 301 https://www.github.com/Jukunye/;
-    }
+sed -i "s|server_name _;|$add_block|" "/etc/nginx/sites-available/default"
 
-    error_page 404 /404.html;
-    location /404 {
-      root /etc/nginx/html;
-      internal;
-    }
-
-}" > /etc/nginx/sites-available/default
-
-service nginx restart
+#Reload Nginx
+nginx -s reload
