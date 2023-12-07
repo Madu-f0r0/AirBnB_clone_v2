@@ -3,6 +3,7 @@
 
 #Install Nginx if not installed already
 if [ ! -x "$(command -v nginx)" ];
+then
         apt-get -y update
         apt-get -y install nginx
 fi
@@ -24,7 +25,7 @@ fi
 ln -s "/data/web_static/releases/test/" "/data/web_static/current"
 
 # Change /data/ ownership to ubuntu
-chown -R "ubuntu":"ubuntu" "/data/"
+chown -R ubuntu:ubuntu "/data/"
 
 # Add location block to Nginx default server block for hbnb_static
 add_block="server_name _;\n\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}"
