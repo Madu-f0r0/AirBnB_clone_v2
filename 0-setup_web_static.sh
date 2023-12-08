@@ -28,9 +28,11 @@ ln -s "/data/web_static/releases/test/" "/data/web_static/current"
 chown -R ubuntu:ubuntu "/data/"
 
 # Add location block to Nginx default server block for hbnb_static
-add_block="server_name _;\n\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}"
-
-sed -i "s|server_name _;|$add_block|" "/etc/nginx/sites-available/default"
+if ! grep -q "location /hbnb_static {" "/etc/nginx/sites-available/default";
+then
+	add_block="server_name _;\n\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}"
+	sed -i "s|server_name _;|$add_block|" "/etc/nginx/sites-available/default"
+fi
 
 #Reload Nginx
 nginx -s reload
