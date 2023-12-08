@@ -17,12 +17,7 @@ echo "my config works well" > "/data/web_static/releases/test/index.html"
 
 # Create symlink of /data/web_static/current to /data/web_static/releases/test/
 # Delete and recreate link if already exists
-if [ -L "/data/web_static/current" ];
-then
-        rm "/data/web_static/current"
-fi
-
-ln -s "/data/web_static/releases/test/" "/data/web_static/current"
+ln -sf "/data/web_static/releases/test/" "/data/web_static/current"
 
 # Change /data/ ownership to ubuntu
 chown -R ubuntu:ubuntu "/data/"
