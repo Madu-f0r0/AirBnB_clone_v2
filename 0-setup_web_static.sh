@@ -2,11 +2,8 @@
 # Initial config of my web servers
 
 #Install Nginx if not installed already
-if [ ! -x "$(command -v nginx)" ];
-then
-        apt-get -y update
-        apt-get -y install nginx
-fi
+apt-get -y update
+apt-get -y install nginx
 
 # Make the following directories if they do not exist
 mkdir -p "/data/web_static/releases/test"
