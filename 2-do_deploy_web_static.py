@@ -2,7 +2,7 @@
 """ This script generates a `.tgz` archive """
 
 from datetime import datetime
-from fabric.api import local
+from fabric.api import *
 from os.path import exists
 
 env.hosts = ["100.24.72.83", "100.25.162.168"]
