@@ -22,4 +22,5 @@ class State(BaseModel, Base):
         @property
         def cities(self):
             all_cities = models.storage.all(City)
-            return [val for key, val in all_cities.items() if val.__dict__["state_id"] == self.id]
+            return [val for key, val in all_cities.items()
+                    if val.__dict__["state_id"] == self.id]

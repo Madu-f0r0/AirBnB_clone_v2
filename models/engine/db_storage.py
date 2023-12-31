@@ -23,14 +23,16 @@ class DBStorage():
         host = getenv('HBNB_MYSQL_HOST')
         database = getenv('HBNB_MYSQL_DB')
 
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}:3306/{}'.format(
-        user, password, host, database), pool_pre_ping=True)
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}:3306/{}'.
+                                      format(user, password, host, database),
+                                      pool_pre_ping=True)
 
         if env == 'test':
             pass
 
     def all(self, cls=None):
-        classes = {'City': City, 'Place': Place, 'Review': Review, 'State': State, 'User': User}
+        classes = {'City': City, 'Place': Place, 'Review': Review,
+                   'State': State, 'User': User}
         if cls in classes.keys():
             cls = classes[cls]
 
@@ -47,7 +49,6 @@ class DBStorage():
 
         return {f'{obj.__class__.__name__}.{obj.id}': obj for obj in objects}
 
-
     def new(self, obj):
         self.__session.add(obj)
 
@@ -61,7 +62,8 @@ class DBStorage():
     def reload(self):
         Base.metadata.create_all(self.__engine)
 
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
 
