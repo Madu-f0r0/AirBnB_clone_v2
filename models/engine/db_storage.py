@@ -30,15 +30,17 @@ class DBStorage():
             pass
 
     def all(self, cls=None):
-        classes = {'State': State, 'City': City, 'Amenity': Amenity, 'Place': Place, 'Review': Review, 'User': User}
+        classes = {'City': City, 'Place': Place, 'Review': Review, 'State': State, 'User': User}
         if cls in classes.keys():
             cls = classes[cls]
 
         if cls is None:
             # If cls is not specified, query all objects from all tables
             objects = []
-            objects += self.__session.query(State).all()
-            objects += self.__session.query(City).all()
+            for cl in classes.values():
+                objects += self.__session.query(cl).all()
+            # objects += self.__session.query(State).all()
+            # objects += self.__session.query(City).all()
         else:
             # Query all objects of the specified class
             objects = self.__session.query(cls).all()
@@ -62,4 +64,6 @@ class DBStorage():
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
-        
+
+    def close(self):
+        self.__session.close()
