@@ -1,3 +1,7 @@
+#!/usr/bin/python3
+""" This module contains the implementation for a database storage
+class using SQLAlchemy"""
+
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import (create_engine)
 from sqlalchemy.ext.declarative import declarative_base
